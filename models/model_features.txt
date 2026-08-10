@@ -1,0 +1,18 @@
+Coal Transport Delay Prediction Model
+
+Features:
+Distance_km
+Coal_Weight_Ton
+Fuel_Used_Liters
+Average_Speed_kmh
+Loading_Time_Min
+Unloading_Time_Min
+Weather
+Traffic_Level
+Driver_Experience_Years
+Previous_Delays
+Safety_Score
+Fuel_Efficiency_km_per_liter
+
+Target:
+Delay
