@@ -1,5 +1,4 @@
 import streamlit as st
-from textwrap import dedent
 import pandas as pd
 import numpy as np
 import joblib
@@ -35,9 +34,16 @@ RISK_DATA_PATH = (
 
 
 # ============================================================
+# THEME STATE
+# ============================================================
+
+if "dark_mode" not in st.session_state:
+    st.session_state.dark_mode = True
+
+# ============================================================
 # CUSTOM CSS — PROFESSIONAL COMMAND CENTER UI
 # ============================================================
-st.markdown(dedent("""
+st.markdown("""
 <style>
 :root {
     --bg: #070b12;
@@ -148,9 +154,81 @@ h3 { font-weight: 700 !important; }
 /* Tables */
 [data-testid="stDataFrame"] { border-radius:14px; overflow:hidden; border:1px solid var(--border); }
 
-/* Hide Streamlit chrome */
-#MainMenu { visibility:hidden; }
+/* Keep Streamlit menu/settings available */
 footer { visibility:hidden; }
+
+/* ===== GLOBAL COAL TRANSPORT AI HEADER ===== */
+.top-brand {
+    width: 100%;
+    min-height: 78px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 13px 20px;
+    margin-bottom: 22px;
+    border-radius: 18px;
+    border: 1px solid rgba(148,163,184,.16);
+    background: linear-gradient(135deg, rgba(17,24,39,.96), rgba(15,23,42,.82));
+    box-shadow: 0 14px 45px rgba(0,0,0,.22);
+}
+.brand-logo {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    font-size: 24px;
+    background: linear-gradient(135deg, rgba(245,158,11,.20), rgba(245,158,11,.06));
+    border: 1px solid rgba(245,158,11,.30);
+    box-shadow: 0 0 24px rgba(245,158,11,.10);
+}
+.brand-copy { flex: 1; }
+.brand-name {
+    color: #f8fafc;
+    font-size: 1.12rem;
+    line-height: 1.15;
+    font-weight: 900;
+    letter-spacing: .075em;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.brand-subtitle {
+    margin-top: 4px;
+    color: #94a3b8;
+    font-size: .72rem;
+    letter-spacing: .035em;
+    font-weight: 500;
+}
+.brand-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    color: #86efac;
+    background: rgba(34,197,94,.08);
+    border: 1px solid rgba(34,197,94,.20);
+    font-size: .67rem;
+    font-weight: 850;
+    letter-spacing: .08em;
+    white-space: nowrap;
+}
+.brand-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 12px rgba(34,197,94,.85);
+}
+[data-testid="stSidebar"] [data-testid="stToggle"] {
+    padding-top: 2px;
+    padding-bottom: 8px;
+}
+[data-testid="stSidebar"] [data-testid="stToggle"] label {
+    font-weight: 750;
+    color: #cbd5e1;
+}
 
 /* ===== V2 PREMIUM MODEL CENTER ===== */
 .model-hero-v2 {
@@ -265,7 +343,7 @@ footer { visibility:hidden; }
 }
 
 </style>
-"""), unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 # ============================================================
 # LOAD DATA
@@ -394,6 +472,125 @@ st.sidebar.metric(
     "72.95%"
 )
 
+# ------------------------------------------------------------
+# THEME TOGGLE
+# ------------------------------------------------------------
+
+st.sidebar.markdown("---")
+
+st.session_state.dark_mode = st.sidebar.toggle(
+    "🌙 Dark Mode / ☀️ Light Mode",
+    value=st.session_state.dark_mode,
+    key="dark_mode_toggle",
+)
+
+DARK_MODE = st.session_state.dark_mode
+PLOTLY_TEMPLATE = "plotly_dark" if DARK_MODE else "plotly_white"
+
+# Light-mode overrides. Dark mode remains the original UI.
+if not DARK_MODE:
+    st.markdown(r"""
+    <style>
+    :root {
+        --bg: #f4f7fb;
+        --panel: rgba(255,255,255,.94);
+        --panel-2: rgba(248,250,252,.96);
+        --border: rgba(15,23,42,.10);
+        --text: #0f172a;
+        --muted: #64748b;
+        --accent: #d97706;
+        --accent-2: #f59e0b;
+    }
+    .stApp {
+        background:
+            radial-gradient(circle at 78% 0%, rgba(245,158,11,.10), transparent 28%),
+            radial-gradient(circle at 12% 20%, rgba(14,165,233,.06), transparent 24%),
+            linear-gradient(135deg, #f8fafc 0%, #eef2f7 52%, #f8fafc 100%);
+        color: #0f172a;
+    }
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+        border-right: 1px solid rgba(15,23,42,.10);
+    }
+    [data-testid="stSidebar"] .stRadio label { color: #334155 !important; }
+    [data-testid="stSidebar"] [data-testid="stToggle"] label { color: #334155 !important; }
+    .top-brand {
+        background: linear-gradient(135deg, rgba(255,255,255,.98), rgba(248,250,252,.96));
+        border-color: rgba(15,23,42,.10);
+        box-shadow: 0 14px 40px rgba(15,23,42,.08);
+    }
+    .brand-name { color: #0f172a; }
+    .brand-subtitle { color: #64748b; }
+    .card, .metric-card, .model-card {
+        background: linear-gradient(145deg, #ffffff, #f8fafc);
+        border-color: rgba(15,23,42,.10);
+        box-shadow: 0 12px 32px rgba(15,23,42,.07);
+    }
+    .metric-title, .model-card-title { color: #64748b; }
+    .metric-value, .model-card-value { color: #0f172a; }
+    .metric-delta, .model-card-sub { color: #64748b; }
+    .feature-pill {
+        background: #f1f5f9;
+        border-color: rgba(15,23,42,.10);
+        color: #334155;
+    }
+    .arch-node {
+        background: #f8fafc;
+        border-color: rgba(15,23,42,.10);
+        color: #0f172a;
+    }
+    .insight {
+        background: #ffffff;
+        border-color: rgba(15,23,42,.10);
+    }
+    .insight strong { color: #0f172a; }
+    .hero {
+        background:
+            radial-gradient(circle at 82% 35%, rgba(245,158,11,.16), transparent 24%),
+            linear-gradient(135deg, rgba(255,255,255,.98), rgba(241,245,249,.96));
+        border-color: rgba(245,158,11,.22);
+        box-shadow: 0 20px 60px rgba(15,23,42,.10);
+    }
+    .hero-sub { color: #475569; }
+    .model-hero-v2 {
+        background:
+            linear-gradient(90deg, rgba(255,255,255,.98) 0%, rgba(255,255,255,.88) 42%, rgba(255,255,255,.25) 100%),
+            url("https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=1800&q=85") center/cover;
+        border-color: rgba(245,158,11,.22);
+        box-shadow: 0 24px 70px rgba(15,23,42,.15);
+    }
+    .model-hero-title-v2 { color: #0f172a !important; }
+    .model-hero-sub-v2 { color: #475569 !important; }
+    .signal { border-bottom-color: rgba(15,23,42,.08); }
+    .signal-name { color: #334155; }
+    .signal-value { color: #0f172a; }
+    .pipeline-node, .feature-box {
+        background: rgba(248,250,252,.96);
+        border-color: rgba(15,23,42,.10);
+    }
+    .pipeline-node b, .feature-box b { color: #0f172a; }
+    .pipeline-node span, .feature-box span { color: #64748b; }
+    </style>
+    """, unsafe_allow_html=True)
+
+# ------------------------------------------------------------
+# GLOBAL BRAND HEADER
+# ------------------------------------------------------------
+
+st.markdown(r"""
+<div class="top-brand">
+    <div class="brand-logo">🚛</div>
+    <div class="brand-copy">
+        <div class="brand-name">COAL TRANSPORT AI</div>
+        <div class="brand-subtitle">Intelligent Delay &amp; Risk Monitoring System</div>
+    </div>
+    <div class="brand-status">
+        <span class="brand-status-dot"></span>
+        SYSTEM ONLINE
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
 
 # ============================================================
 # CONTROL CENTER
@@ -401,7 +598,6 @@ st.sidebar.metric(
 
 if page == "🏠 Control Center":
 
-    st.title("🚛 Coal Transport AI")
     st.caption(
         "AI-powered operational control center for coal transportation"
     )
@@ -472,7 +668,7 @@ if page == "🏠 Control Center":
         )
 
         fig.update_layout(
-            template="plotly_dark",
+            template=PLOTLY_TEMPLATE,
             height=350
         )
 
@@ -501,7 +697,7 @@ if page == "🏠 Control Center":
         )
 
         fig.update_layout(
-            template="plotly_dark",
+            template=PLOTLY_TEMPLATE,
             height=350
         )
 
@@ -537,7 +733,7 @@ if page == "🏠 Control Center":
     )
 
     fig.update_layout(
-        template="plotly_dark",
+        template=PLOTLY_TEMPLATE,
         height=450
     )
 
@@ -878,7 +1074,7 @@ elif page == "🚨 Risk Monitor":
         )
 
         fig.update_layout(
-            template="plotly_dark"
+            template=PLOTLY_TEMPLATE
         )
 
         st.plotly_chart(
@@ -1002,7 +1198,7 @@ elif page == "📊 Analytics":
     )
 
     fig.update_layout(
-        template="plotly_dark"
+        template=PLOTLY_TEMPLATE
     )
 
     st.plotly_chart(
@@ -1060,7 +1256,7 @@ elif page == "🧠 Explainability":
         )
 
         fig.update_layout(
-            template="plotly_dark",
+            template=PLOTLY_TEMPLATE,
             height=600
         )
 
@@ -1086,7 +1282,7 @@ elif page == "ℹ️ Model":
     # --------------------------------------------------------
     # HERO
     # --------------------------------------------------------
-    st.markdown(dedent("""
+    st.markdown("""
     <div class="model-hero-v2">
         <div class="model-hero-content">
             <div class="model-hero-eyebrow">COAL TRANSPORT AI · MODEL CENTER</div>
@@ -1098,7 +1294,7 @@ elif page == "ℹ️ Model":
             <div class="live-chip"><i></i> LIVE MODEL · READY FOR INFERENCE</div>
         </div>
     </div>
-    """), unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
     # --------------------------------------------------------
     # EXECUTIVE KPIs
@@ -1106,40 +1302,40 @@ elif page == "ℹ️ Model":
     k1, k2, k3, k4 = st.columns(4)
 
     with k1:
-        st.markdown(dedent("""
+        st.markdown("""
         <div class="v2-card">
             <div class="v2-label">Model Status</div>
             <div class="v2-big v2-good">● ONLINE</div>
             <div class="v2-muted">Pipeline loaded successfully</div>
         </div>
-        """), unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
     with k2:
-        st.markdown(dedent("""
+        st.markdown("""
         <div class="v2-card">
             <div class="v2-label">Algorithm</div>
             <div class="v2-big">Gradient Boosting</div>
             <div class="v2-muted">Binary classification engine</div>
         </div>
-        """), unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
     with k3:
-        st.markdown(dedent("""
+        st.markdown("""
         <div class="v2-card">
             <div class="v2-label">ROC-AUC</div>
             <div class="v2-big v2-warn">72.95%</div>
             <div class="v2-muted">Held-out test performance</div>
         </div>
-        """), unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
     with k4:
-        st.markdown(dedent("""
+        st.markdown("""
         <div class="v2-card">
             <div class="v2-label">Accuracy</div>
             <div class="v2-big">70.75%</div>
             <div class="v2-muted">2,000 trip test set</div>
         </div>
-        """), unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -1185,7 +1381,7 @@ elif page == "ℹ️ Model":
     with right:
         st.markdown("### 🩺 Model Health")
 
-        st.markdown(dedent("""
+        st.markdown("""
         <div class="v2-card">
             <div class="signal">
                 <span class="signal-name">Inference engine</span>
@@ -1212,7 +1408,7 @@ elif page == "ℹ️ Model":
                 <span class="signal-value">.pkl loaded</span>
             </div>
         </div>
-        """), unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -1221,7 +1417,7 @@ elif page == "ℹ️ Model":
     # --------------------------------------------------------
     st.markdown("### ⚙️ AI Decision Pipeline")
 
-    st.markdown(dedent("""
+    st.markdown("""
     <div class="pipeline">
         <div class="pipeline-node">
             <b>🚛 Trip Data</b>
@@ -1243,7 +1439,7 @@ elif page == "ℹ️ Model":
             <span>Risk + action</span>
         </div>
     </div>
-    """), unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -1272,7 +1468,7 @@ elif page == "ℹ️ Model":
             textposition="outside"
         )
         fig.update_layout(
-            template="plotly_dark",
+            template=PLOTLY_TEMPLATE,
             height=280,
             margin=dict(l=10, r=40, t=15, b=10),
             xaxis=dict(range=[0, 100], title="Score (%)"),
@@ -1295,14 +1491,16 @@ elif page == "ℹ️ Model":
             ("Fuel Efficiency", "Moderate", "Vehicle"),
         ]
 
-        signal_items = []
+        html = '<div class="v2-card">'
         for name, strength, meaning in signals:
-            signal_items.append(
-                f'<div class="signal"><span class="signal-name">{name}</span>'
-                f'<span><span class="v2-warn">{strength}</span> '
-                f'<span style="color:#64748b;font-size:.68rem;">· {meaning}</span></span></div>'
-            )
-        html = '<div class="v2-card">' + ''.join(signal_items) + '</div>'
+            html += f"""
+            <div class="signal">
+                <span class="signal-name">{name}</span>
+                <span><span class="v2-warn">{strength}</span>
+                <span style="color:#64748b;font-size:.68rem;"> · {meaning}</span></span>
+            </div>
+            """
+        html += "</div>"
         st.markdown(html, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -1327,13 +1525,15 @@ elif page == "ℹ️ Model":
         ("Fuel Efficiency", "km/L", "Vehicle efficiency"),
     ]
 
-    feature_items = []
+    html = '<div class="feature-grid">'
     for name, unit, desc in feature_details:
-        feature_items.append(
-            f'<div class="feature-box"><b>{name}</b>'
-            f'<span>{unit} · {desc}</span></div>'
-        )
-    html = '<div class="feature-grid">' + ''.join(feature_items) + '</div>'
+        html += f"""
+        <div class="feature-box">
+            <b>{name}</b>
+            <span>{unit} · {desc}</span>
+        </div>
+        """
+    html += "</div>"
     st.markdown(html, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -1353,13 +1553,13 @@ elif page == "ℹ️ Model":
     cols = st.columns(4)
     for col, (level, band, action, cls) in zip(cols, bands):
         with col:
-            st.markdown(dedent(f"""
+            st.markdown(f"""
             <div class="v2-card">
                 <div class="v2-label">{level}</div>
                 <div class="v2-big {cls}">{band}</div>
                 <div class="v2-muted">{action}</div>
             </div>
-            """), unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -1394,7 +1594,7 @@ elif page == "ℹ️ Model":
             textposition="outside"
         )
         fig.update_layout(
-            template="plotly_dark",
+            template=PLOTLY_TEMPLATE,
             height=390,
             margin=dict(l=10, r=45, t=15, b=10),
             xaxis_title="Importance",
@@ -1409,4 +1609,3 @@ elif page == "ℹ️ Model":
         "Risk scores indicate operational likelihood and should be combined "
         "with dispatch conditions, route knowledge and human judgment."
     )
-
